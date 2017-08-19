@@ -16,17 +16,22 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "WorldSession.h"
+#include "AccountMgr.h"
+#include "AuctionHouseMgr.h"
+#include "AuctionHousePackets.h"
+#include "Creature.h"
+#include "DatabaseEnv.h"
+#include "Item.h"
+#include "Language.h"
+#include "Log.h"
+#include "Mail.h"
+#include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Player.h"
+#include "Util.h"
 #include "World.h"
 #include "WorldPacket.h"
-#include "WorldSession.h"
-#include "AuctionHouseMgr.h"
-#include "Log.h"
-#include "Language.h"
-#include "Util.h"
-#include "AccountMgr.h"
-#include "AuctionHousePackets.h"
 
 //void called when player click on auctioneer npc
 void WorldSession::HandleAuctionHelloOpcode(WorldPackets::AuctionHouse::AuctionHelloRequest& packet)
@@ -110,12 +115,6 @@ void WorldSession::SendAuctionOwnerBidNotification(AuctionEntry const* auction, 
 //this void creates new auction and adds auction to some auctionhouse
 void WorldSession::HandleAuctionSellItem(WorldPackets::AuctionHouse::AuctionSellItem& packet)
 {
-    if (packet.Items.size() > MAX_AUCTION_ITEMS)
-    {
-        SendAuctionCommandResult(NULL, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
-        return;
-    }
-
     for (auto const& item : packet.Items)
         if (!item.Guid || !item.UseCount || item.UseCount > 1000)
             return;
@@ -638,8 +637,12 @@ void WorldSession::HandleAuctionListItems(WorldPackets::AuctionHouse::AuctionLis
             {
                 for (auto const& subClassFilter : classFilter.SubClassFilters)
                 {
-                    filters->Classes[classFilter.ItemClass].SubclassMask |= 1 << subClassFilter.ItemSubclass;
-                    filters->Classes[classFilter.ItemClass].InvTypes[subClassFilter.ItemSubclass] = subClassFilter.InvTypeMask;
+                    if (classFilter.ItemClass < MAX_ITEM_CLASS)
+                    {
+                        filters->Classes[classFilter.ItemClass].SubclassMask |= 1 << subClassFilter.ItemSubclass;
+                        if (subClassFilter.ItemSubclass < MAX_ITEM_SUBCLASS_TOTAL)
+                            filters->Classes[classFilter.ItemClass].InvTypes[subClassFilter.ItemSubclass] = subClassFilter.InvTypeMask;
+                    }
                 }
             }
             else
