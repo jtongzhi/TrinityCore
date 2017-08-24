@@ -1698,7 +1698,7 @@ bool InitTriggerAuraData()
     isTriggerAura[SPELL_AURA_SPELL_MAGNET] = true;
     isTriggerAura[SPELL_AURA_MOD_ATTACK_POWER] = true;
     isTriggerAura[SPELL_AURA_MOD_POWER_REGEN_PERCENT] = true;
-    isTriggerAura[SPELL_AURA_ADD_CASTER_HIT_TRIGGER] = true;
+    isTriggerAura[SPELL_AURA_INTERCEPT_MELEE_RANGED_ATTACKS] = true;
     isTriggerAura[SPELL_AURA_OVERRIDE_CLASS_SCRIPTS] = true;
     isTriggerAura[SPELL_AURA_MOD_MECHANIC_RESISTANCE] = true;
     isTriggerAura[SPELL_AURA_RANGED_ATTACK_POWER_ATTACKER_BONUS] = true;
@@ -3675,6 +3675,28 @@ void SpellMgr::LoadSpellInfoCorrections()
         spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(13); // 50000yd
     });
     // ENDOF ISLE OF CONQUEST SPELLS
+
+    //
+    // FIRELANDS SPELLS
+    //
+    // Torment Searcher
+    ApplySpellFix({ 99253 }, [](SpellInfo* spellInfo)
+    {
+        const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->MaxRadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_15_YARDS);
+    });
+
+    // Torment Damage
+    ApplySpellFix({ 99256 }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Attributes |= SPELL_ATTR0_NEGATIVE_1;
+    });
+
+    // Blaze of Glory
+    ApplySpellFix({ 99252 }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_CHANGE_MAP;
+    });
+    // ENDOF FIRELANDS SPELLS
 
     // Summon Master Li Fei
     ApplySpellFix({ 102445 }, [](SpellInfo* spellInfo)
