@@ -117,7 +117,7 @@ class spell_gen_adaptive_warding : public SpellScriptLoader
 
             bool CheckProc(ProcEventInfo& eventInfo)
             {
-                if (eventInfo.GetDamageInfo()->GetSpellInfo()) // eventInfo.GetSpellInfo()
+                if (!eventInfo.GetSpellInfo())
                     return false;
 
                 // find Mage Armor
@@ -160,7 +160,7 @@ class spell_gen_adaptive_warding : public SpellScriptLoader
                     default:
                         return;
                 }
-                GetTarget()->CastSpell(GetTarget(), spellId, true, NULL, aurEff);
+                GetTarget()->CastSpell(GetTarget(), spellId, true, nullptr, aurEff);
             }
 
             void Register() override
@@ -2120,7 +2120,7 @@ class spell_gen_obsidian_armor : public SpellScriptLoader
 
             bool CheckProc(ProcEventInfo& eventInfo)
             {
-                if (eventInfo.GetDamageInfo()->GetSpellInfo()) // eventInfo.GetSpellInfo()
+                if (!eventInfo.GetSpellInfo())
                     return false;
 
                 if (GetFirstSchoolInMask(eventInfo.GetSchoolMask()) == SPELL_SCHOOL_NORMAL)
@@ -4583,8 +4583,6 @@ void AddSC_generic_spell_scripts()
     new spell_gen_increase_stats_buff("spell_dru_mark_of_the_wild");
     new spell_gen_increase_stats_buff("spell_pri_power_word_fortitude");
     new spell_gen_increase_stats_buff("spell_pri_shadow_protection");
-    new spell_gen_increase_stats_buff("spell_mage_arcane_brilliance");
-    new spell_gen_increase_stats_buff("spell_mage_dalaran_brilliance");
     new spell_gen_interrupt();
     new spell_gen_lifebloom("spell_hexlord_lifebloom", SPELL_HEXLORD_MALACRASS_LIFEBLOOM_FINAL_HEAL);
     new spell_gen_lifebloom("spell_tur_ragepaw_lifebloom", SPELL_TUR_RAGEPAW_LIFEBLOOM_FINAL_HEAL);
